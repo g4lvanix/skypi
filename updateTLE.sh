@@ -1,3 +1,3 @@
 #!/bin/bash
 
-wget http://celestrak.com/NORAD/elements/stations.txt 
+wget -q -O /home/pi/skypi/stations.txt http://celestrak.com/NORAD/elements/stations.txt
