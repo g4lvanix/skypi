@@ -26,8 +26,7 @@ def readTLE(fname):
 	sats = []
 	with open(fname,'r') as f:
 		tles = f.readlines()
-		tles = tles[15:-1] # strip away the header information and the last line
-
+		
 		for i in range(0,len(tles)-2,3):
 			sats.append(ephem.readtle(tles[i],tles[i+1],tles[i+2]))
 
@@ -35,7 +34,6 @@ def readTLE(fname):
 
 def extractWatchlist(sats,watchlist):
 	watched = []
-	names = []
 	# get the satellite names
 	for s in sats:
 		if watchlist.__contains__(s.name):
