@@ -12,6 +12,7 @@ qth_el= 232.0
 # satellites to display information about
 qth_watchlist = ["ISS","AO-85","SO-50"]
 
+# sets up the ephem Observer for the current location
 def locationSetup(lat,lon,el=0,p=0,horz=0):
 	obs = ephem.Observer()
 	obs.lat = np.deg2rad(lat)
@@ -21,7 +22,7 @@ def locationSetup(lat,lon,el=0,p=0,horz=0):
 	obs.horizon = np.deg2rad(horz)
 	return obs
 
-
+# reads a standard celestrak TLE file (needs to be stripped of any non TLE headers)
 def readTLE(fname):
 	sats = []
 	with open(fname,'r') as f:
@@ -32,6 +33,8 @@ def readTLE(fname):
 
 	return sats
 
+# returns a list of ephem.EarthSatellite objects whose names correspond
+# to the strings in watchlist
 def extractWatchlist(sats,watchlist):
 	watched = []
 	# get the satellite names
@@ -41,6 +44,8 @@ def extractWatchlist(sats,watchlist):
 
 	return watched
 
+# deals with getting more info for a satellite pass than next_pass will provide
+# such as max. altitude azimuth 
 def getPassInfo(obs,sat):
 	dummy = obs
 	rise_time, rise_az, max_alt_time, max_alt, set_time, set_az = dummy.next_pass(sat)
@@ -56,6 +61,7 @@ if __name__ == "__main__":
 	wl = extractWatchlist(sats,qth_watchlist)
 
 	for w in wl:
+		print(w)
 		pi = getPassInfo(qth,w)
 
 		print(w.name,"\nRise time: %s  Rise Az: %03.1f\nMax alt. time: %s Max alt. Az: %03.1f Max. El.: %03.1f\nSet time: %s Set Az: %03.1f\n" % (pi[0],np.rad2deg(pi[1]), pi[2],np.rad2deg(pi[3]),np.rad2deg(pi[4]),pi[5],np.rad2deg(pi[6])) )
