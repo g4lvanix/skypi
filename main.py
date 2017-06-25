@@ -2,8 +2,11 @@
 
 import ephem
 import numpy as np
-import heapq
+import urllib.request
+import shutil
 
+# TLE URL
+tle_url = "http://www.amsat.org/amsat/ftp/keps/current/nasabare.txt"
 # location info
 qth_lat = 51.1333
 qth_lon = 13.75
@@ -21,6 +24,11 @@ def locationSetup(lat,lon,el=0,p=0,horz=0):
 	obs.pressure = p
 	obs.horizon = np.deg2rad(horz)
 	return obs
+
+# updates the TLE file from the AMSAT server
+def updateTLE(url):
+	with urllib.request.urlopen(url) as resp, open("stations.txt","wb") as f:
+		shutil.copyfileobj(resp,f)
 
 # reads a standard celestrak TLE file (needs to be stripped of any non TLE headers)
 def readTLE(fname):
@@ -45,7 +53,7 @@ def extractWatchlist(sats,watchlist):
 	return watched
 
 # deals with getting more info for a satellite pass than next_pass will provide
-# such as max. altitude azimuth 
+# such as max. altitude azimuth
 def getPassInfo(obs,sat):
 	dummy = obs
 	rise_time, rise_az, max_alt_time, max_alt, set_time, set_az = dummy.next_pass(sat)
@@ -61,7 +69,6 @@ if __name__ == "__main__":
 	wl = extractWatchlist(sats,qth_watchlist)
 
 	for w in wl:
-		print(w)
 		pi = getPassInfo(qth,w)
 
 		print(w.name,"\nRise time: %s  Rise Az: %03.1f\nMax alt. time: %s Max alt. Az: %03.1f Max. El.: %03.1f\nSet time: %s Set Az: %03.1f\n" % (pi[0],np.rad2deg(pi[1]), pi[2],np.rad2deg(pi[3]),np.rad2deg(pi[4]),pi[5],np.rad2deg(pi[6])) )
