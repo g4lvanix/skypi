@@ -32,24 +32,18 @@ def updateTLE(url):
 
 # reads a standard celestrak TLE file (needs to be stripped of any non TLE headers)
 def readTLE(fname):
-	sats = []
 	with open(fname,'r') as f:
 		tles = f.readlines()
-
-		for i in range(0,len(tles)-2,3):
-			sats.append(ephem.readtle(tles[i],tles[i+1],tles[i+2]))
+		sats = [ephem.readtle(tles[i],tles[i+1],tles[i+2]) for i in range(0,len(tles)-2,3)]
 
 	return sats
 
 # returns a list of ephem.EarthSatellite objects whose names correspond
 # to the strings in watchlist
 def extractWatchlist(sats,watchlist):
-	watched = []
 	# get the satellite names
-	for s in sats:
-		if watchlist.__contains__(s.name):
-			watched.append(s)
-
+	# so pythonic! :P
+	watched = [s for s in sats if s.name in watchlist]
 	return watched
 
 # deals with getting more info for a satellite pass than next_pass will provide
