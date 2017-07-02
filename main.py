@@ -50,8 +50,12 @@ def extractWatchlist(sats,watchlist):
 # such as max. altitude azimuth
 def getPassInfo(obs,sat):
 	dummy = obs
-	rise_time, rise_az, max_alt_time, max_alt, set_time, set_az = dummy.next_pass(sat)
-	dummy.date = max_alt_time
+	max_alt = 0
+	while max_alt < np.deg2rad(5):
+		rise_time, rise_az, max_alt_time, max_alt, set_time, set_az = dummy.next_pass(sat)
+		dummy.date = dummy.date + 30*ephem.minute
+
+	dummy_date = max_alt_time
 	sat.compute(dummy)
 
 	return (rise_time, rise_az, max_alt_time, sat.az, max_alt, set_time, set_az)
@@ -65,28 +69,6 @@ if __name__ == "__main__":
 	for w in wl:
 		pi = getPassInfo(qth,w)
 
-		print(w.name,"\nRise time: %s  Rise Az: %03.1f\nMax alt. time: %s Max alt. Az: %03.1f Max. El.: %03.1f\nSet time: %s Set Az: %03.1f\n" % (pi[0],np.rad2deg(pi[1]), pi[2],np.rad2deg(pi[3]),np.rad2deg(pi[4]),pi[5],np.rad2deg(pi[6])) )
+		print(w.name,"\nRise time: %s  Rise Az: %03.1f\nMax alt. time: %s Max alt. Az: %03.1f Max. Alt.: %03.1f\nSet time: %s Set Az: %03.1f\n" % (pi[0],np.rad2deg(pi[1]), pi[2],np.rad2deg(pi[3]),np.rad2deg(pi[4]),pi[5],np.rad2deg(pi[6])) )
 
 	#while True:
-
-
-
-'''
-with open('stations.txt','r') as f:
-	zarya = ephem.readtle(f.readline(),f.readline(),f.readline())
-
-qth = locationSetup(qth_lat,qth_lon,qth_el)
-
-for i in range(3):
-
-	rise_time, rise_az, max_alt_time, max_alt, set_time, set_az = qth.next_pass(zarya)
-	qth.date = max_alt_time
-	zarya.compute(qth)
-
-	print("Rise time: %s  Rise Az: %03.1f\n\
-Max alt. time: %s Max alt. Az: %03.1f Max. El.: %03.1f\n\
-Set time: %s Set Az: %03.1f\n" % (rise_time,np.rad2deg(rise_az),
-max_alt_time,np.rad2deg(zarya.az),np.rad2deg(max_alt),set_time,np.rad2deg(set_az)) )
-
-	qth.date = set_time
-'''
